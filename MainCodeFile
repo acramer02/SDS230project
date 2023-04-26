@@ -23,7 +23,8 @@ library(rvest)
 # NOTE: If you're looking for this data, see the file uploaded called imdbTop250.csv
 data <- imdbTop250
 
-# Show variable names.
+# Show variable names and dimensions.
+dim(data)
 names(data)
 
 # Show the first six rows.
@@ -32,3 +33,35 @@ head(data)
 # Get rid of useless column.
 data <- data[, -3]
 ```
+
+```{r}
+# Only keeping data with cmomplete observations
+data <- data[complete.cases(data),]
+
+# Keep only the first genre for each movie (we can change this later, but it just seemed easier)
+data$First_Genre <- sapply(strsplit(as.character(data$Genre), ", "), function(x) x[1])
+
+# Box plot of Gross income v. Genre
+boxplot(data$Gross ~ data$First_Genre,
+        main = "Return by Genre",
+        ylab = "Gross Return",
+        xlab = "Genre",
+        col = c(2:7),
+        cex.axis = 0.4
+        )
+
+# Plots to visualize some relationships 
+plot(Gross ~ Votes, data = data)
+plot(Votes ~ Ranking, data = data)
+plot(Gross ~ Date, data = data)
+
+# Correlation Matrix with our continuous variables
+(cor_matrix <- cor(data[, c("Rating", "Votes", "Gross")]))
+```
+
+
+
+
+
+
+
