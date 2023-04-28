@@ -80,4 +80,27 @@ cor(imdb_data$Rating, imdb_data$Gross)
 #Performing a linear regression of Rating on Gross (phaedra)
 lm(Rating ~ Gross, data = imdb_data)
 
+#There is only one observation with first genre "Family", only two with first genre "Documentary", and twenty-six with first genre "Film-Noir". Because there aren't enough observations in these categories to be able to compare them on boxplots (natasha)
+table(data$First_Genre)
+#Combining Film Noir, Documentary, and Family under a new Miscellaneous category of first genre (natasha)
+data$First_Genre <- gsub("(Documentary|Family|Film-Noir)", "Miscellaneous", data$First_Genre)
+#Histogram of Rating Frequency (natasha)
+hist(data$Rating, col = "lightblue", main = "Frequency of Rating", xlab = "Rating")
+#NATASHA: Histogram of Run Time Frequency (natasha)
+hist(data$RunTime, col = "lightblue", main = "Frequency of Run Time", xlab = "Run Time (min)")
+
+
+#Get the directors with the most films in the top 250 (natasha)
+top10directors <- names(sort(table(data$Director), decreasing = TRUE)[1:10])
+#Get the all the rows with these directors (natasha)
+top10rows <- subset(data, Director %in% top10directors)
+#Make a boxplot of log of gross revenue by director with the top ten directors (natasha)
+boxplot(log(top10rows$Gross) ~ top10rows$Director,
+        main = "Return by Top Ten Directors",
+        ylab = "Log of Gross Revenue",
+        xlab = "Director",
+        col = c(2:11),
+        cex.axis = 0.3
+        )
+
 
