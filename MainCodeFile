@@ -38,13 +38,13 @@ data <- data[, -3]
 ```
 
 ```{r}
-# Only keeping data with cmomplete observations
+# Only keeping data with cmomplete observations (Jaime)
 data <- data[complete.cases(data),]
 
-# Keep only the first genre for each movie (we can change this later, but it just seemed easier)
+# Keep only the first genre for each movie (we can change this later, but it just seemed easier) (Jaime)
 data$First_Genre <- sapply(strsplit(as.character(data$Genre), ", "), function(x) x[1])
 
-# Box plot of Gross income v. Genre
+# Box plot of Gross income v. Genre (Jaime)
 boxplot(data$Gross ~ data$First_Genre,
         main = "Return by Genre",
         ylab = "Gross Return",
@@ -53,12 +53,12 @@ boxplot(data$Gross ~ data$First_Genre,
         cex.axis = 0.4
         )
 
-# Plots to visualize some relationships 
+# Plots to visualize some relationships (Jaime)
 plot(Gross ~ Votes, data = data)
 plot(Votes ~ Ranking, data = data)
 plot(Gross ~ Date, data = data)
 
-# Correlation Matrix with our continuous variables
+# Correlation Matrix with our continuous variables (Jaime)
 (cor_matrix <- cor(data[, c("Rating", "Votes", "Gross")]))
 ```
 
