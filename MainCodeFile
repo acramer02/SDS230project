@@ -23,6 +23,9 @@ library(rvest)
 # NOTE: If you're looking for this data, see the file uploaded called imdbTop250.csv
 data <- imdbTop250
 
+#I added this here (Phaedra)
+data <- read.csv("imdbTop250.csv", header = TRUE, stringsAsFactors = FALSE)
+
 # Show variable names and dimensions.
 dim(data)
 names(data)
@@ -59,9 +62,22 @@ plot(Gross ~ Date, data = data)
 (cor_matrix <- cor(data[, c("Rating", "Votes", "Gross")]))
 ```
 
+#new variable for log(Gross) (Phaedra) 
+imdb_data$logGross <- log(imdb_data$Gross) (Phaedra)
 
+#checking the distribution of the new variable (Phaedra)
+hist(imdb_data$logGross)
 
+#create a new variable for sqrt(Rating) (Phaedra)
+imdb_data$sqrtRating <- sqrt(imdb_data$Rating)
 
+#checking the distrib of the new variable (Phaedra)
+hist(imdb_data$sqrtRating)
 
+#calculating the corr between Rating and Gross (Phaedra)
+cor(imdb_data$Rating, imdb_data$Gross)
+
+#Performing a linear regression of Rating on Gross (phaedra)
+lm(Rating ~ Gross, data = imdb_data)
 
 
