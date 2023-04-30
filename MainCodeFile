@@ -41,6 +41,9 @@ data <- data[, -3]
 # Only keeping data with cmomplete observations (Jaime)
 data <- data[complete.cases(data),]
 
+#Changes data to only include each movie title once even if it was on the list for multiple years (natasha: i don't know where in our code is the right time/place to put this)
+uniquedata <- data[!duplicated(data$Title),]
+
 # Keep only the first genre for each movie (we can change this later, but it just seemed easier) (Jaime)
 data$First_Genre <- sapply(strsplit(as.character(data$Genre), ", "), function(x) x[1])
 
@@ -90,7 +93,7 @@ hist(data$Rating, col = "lightblue", main = "Frequency of Rating", xlab = "Ratin
 hist(data$RunTime, col = "lightblue", main = "Frequency of Run Time", xlab = "Run Time (min)")
 
 
-#Get the directors with the most films in the top 250 (natasha)
+#Get the directors with the most films in the top 250 (natasha: is this even worth doing?)
 top10directors <- names(sort(table(data$Director), decreasing = TRUE)[1:10])
 #Get the all the rows with these directors (natasha)
 top10rows <- subset(data, Director %in% top10directors)
@@ -103,4 +106,50 @@ boxplot(log(top10rows$Gross) ~ top10rows$Director,
         cex.axis = 0.3
         )
 
+#Side-by-side boxplots of Gross by Genre of Action and Drama (natasha)
+boxplot(log(Gross) ~ First_Genre,
+        data = subset(uniquedata, First_Genre %in% c("Action", "Drama")),
+        main = "Boxplot of Gross Income by Genre: Action and Drama",
+        xlab = "Genre",
+        ylab = "Gross",
+        col = c("lightskyblue", "pink"))
 
+#Two-sample t-test comparing log Gross between Genres of Action and Drama (natasha)
+(test1 <- t.test(log(Gross) ~ First_Genre, 
+                data = uniquedata[uniquedata$First_Genre %in% c("Action", "Drama"), ], 
+                subset = First_Genre %in% c("Action", "Drama"), 
+                conf.level = 0.99)) 
+
+#Bootsrapping smaple means of Gross in Action and Drama (natasha)
+set.seed(230)
+#Set number of bootstrap samples to take
+N <- 10000
+#Make empty vector for sample mean differences
+diffGross <- rep(NA, N)
+for (i in 1:N) {
+  sAction <- sample(uniquedata$Gross[uniquedata$First_Genre == "Action"],
+               sum(uniquedata$First_Genre == "Action"), replace = TRUE)
+  sDrama <- sample(uniquedata$Gross[uniquedata$First_Genre == "Drama"],
+               sum(uniquedata$First_Genre == "Drama"), replace = TRUE)
+  diffGross[i] <- mean(log(sAction)) - mean(log(sDrama))
+}
+
+#Get bootstrap quantiles
+ci <- quantile(diffGross, c(0.005, 0.995))
+round(ci, 2)
+
+#Make histogram of bootstrap sample means
+hist(diffGross, 
+     col = "lightblue", 
+     main = "Bootstrapped Sample Means Diff in log Gross Income", 
+     xlab = "", 
+     breaks = 50)
+
+#Add lines to histogram for CI's
+abline(v = ci, lwd=3, col="rosybrown1")
+abline(v = test1$conf.int, lwd = 3, col = "lightgreen", lty = 2)
+legend("topleft", 
+       c("Original CI","Boot CI"), 
+       lwd = 3, 
+       col = c("lightgreen","rosybrown1"), 
+       lty = c(2,1))
