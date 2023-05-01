@@ -153,3 +153,17 @@ legend("topleft",
        lwd = 3, 
        col = c("lightgreen","rosybrown1"), 
        lty = c(2,1))
+       
+       
+#Anova comparing the mean gross income of movies with different genres (Phaedra)
+anova_results <- aov(Gross ~ First_Genre, data = data)
+
+#ANOVA results (Phaedra
+summary(anova_results)
+
+#Kruskal-Wallis test that compares the median gross income of movies with different ratings (phaedra)
+kwresults <- kruskal.test(Gross ~ Rating, data = data)
+
+# Check the Kruskal-Wallis results (Phaedra_
+print(kwresults_
+
