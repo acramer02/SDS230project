@@ -45,7 +45,7 @@ data$First_Genre <- sapply(strsplit(as.character(data$Genre), ", "), function(x)
 table(data$First_Genre)
 #Combining Film Noir, Documentary, and Family under a new Miscellaneous category of first genre (natasha)
 data$First_Genre <- gsub("(Documentary|Family|Film-Noir)", "Miscellaneous", data$First_Genre)
-
+```
 
 ```{r eval = F}
 # Make histogram of each column of data to check rough distributions
