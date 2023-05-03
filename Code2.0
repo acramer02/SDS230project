@@ -64,7 +64,7 @@ Made histograms of each variable, votes and revenue have exponential distributio
 hist(data$Votes)
 hist(data$Gross)
 ```
-
+```{r}
 # Make logGross and logVotes variables
 
 data$logGross <- log(data$Gross)
