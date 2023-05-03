@@ -47,6 +47,7 @@ table(data$First_Genre)
 data$First_Genre <- gsub("(Documentary|Family|Film-Noir)", "Miscellaneous", data$First_Genre)
 
 
+```{r eval = F}
 # Make histogram of each column of data to check rough distributions
 for(col in colnames(data)){
   if(is.numeric(data[[col]]) || is.integer(data[[col]])){
@@ -54,6 +55,15 @@ for(col in colnames(data)){
          col = "lightblue")
   }
 }
+```
+
+Made histograms of each variable, votes and revenue have exponential distributions and should be converted to log versions of themselves.
+
+```{r}
+# Please make pretty somebody?
+hist(data$Votes)
+hist(data$Gross)
+```
 
 # Make logGross and logVotes variables
 
