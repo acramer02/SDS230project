@@ -60,9 +60,19 @@ for(col in colnames(data)){
 Made histograms of each variable, votes and revenue have exponential distributions and should be converted to log versions of themselves.
 
 ```{r}
-# Please make pretty somebody?
-hist(data$Votes)
-hist(data$Gross)
+# Please
+hist(data$Votes,
+     col = "lightblue",
+     xlab = "Votes",
+     breaks = 30,
+     main = "Histogram of Votes")
+
+
+hist(data$Gross,
+     col = "lightblue",
+     xlab = "Gross Return (in millions)",
+     breaks = 30,
+     main = "Histogram of Gross Return")
 ```
 ```{r}
 # Make logGross and logVotes variables
