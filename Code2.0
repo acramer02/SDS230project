@@ -235,3 +235,21 @@ kwresults <- kruskal.test(Gross ~ Rating, data = data)
 # Check the Kruskal-Wallis results (Phaedra_
 print(kwresults)
 ```
+
+```{r echo = FALSE}
+uniquedata2 <- uniquedata[ , c("logGross", "Ranking", "Rating", "Score", 
+                                       "RunTime", "logVotes")]
+
+uniquedata2[uniquedata2$logGross < 0, ] <- 0
+
+bs_reg_sum <- summary(regsubsets(logGross ~ ., data = uniquedata2))
+modbic <- which.min(bs_reg_sum$bic)
+names(uniquedata2)[bs_reg_sum$which[modbic, ]][-1]
+```
+
+```{r}
+(lm1 <- lm(logGross ~ Rating + RunTime + logVotes, data = uniquedata2))
+
+summary(lm1)
+myResPlots2(lm1)
+```
