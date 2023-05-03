@@ -82,16 +82,29 @@ head(uniquedata)
 # Box plot of Gross income v. Genre (Jaime)
 boxplot(uniquedata$logGross ~ uniquedata$First_Genre,
         main = "Return by Genre",
-        ylab = "Gross Return",
+        ylab = "Gross Return (in millions)",
         xlab = "Genre",
         col = c(2:7),
         cex.axis = 0.4
         )
 
 # Plots to visualize some relationships (Jaime)
-plot(logGross ~ logVotes, data = uniquedata)
-plot(logVotes ~ Ranking, data = data)
-plot(logGross ~ Date, data = uniquedata)
+plot(logGross ~ logVotes, data = uniquedata,
+     pch = 19,
+     col = "lightblue3",
+     xlab = "Log of Votes",
+     ylab = "Log of Gross Return",
+     main = "Log of Gross Return by Log of Votes")
+plot(logVotes ~ Ranking, data = data,
+     pch = 19,
+     col = "lightblue2",
+     ylab = "Log of Votes",
+     main = "Log of Votes by Ranking")
+plot(logGross ~ Date, data = uniquedata,
+     pch = 19,
+     col = "lightblue",
+     xlab = "Log of Gross Return",
+     main = "Log of Gross Return by Date")
 
 # Correlation Matrix with our continuous variables (Jaime)
 (cor_matrix <- cor(data[, c("Rating", "Votes", "Gross")]))
