@@ -57,7 +57,7 @@ for(col in colnames(data)){
 }
 ```
 
-Made histograms of each variable, votes and revenue have exponential distributions and should be converted to log versions of themselves.
+*Given how the histograms look, it appears that gross revenue and votes require a log transformation.*
 
 ```{r}
 # Please
@@ -80,12 +80,27 @@ hist(data$Gross,
 data$logGross <- log(data$Gross)
 data$logVotes <- log(data$Votes)
 
+hist(data$logVotes,
+     col = "lightblue",
+     xlab = "Votes",
+     breaks = 30,
+     main = "Histogram of Log Votes")
+
+
+hist(data$logGross,
+     col = "lightblue",
+     xlab = "Gross Return (in millions)",
+     breaks = 30,
+     main = "Histogram of Log Gross Return")
+
 data[data$Title == "Goodfellas", ]
 
 #Changes data to only include each movie title once even if it was on the list for multiple years (natasha: i don't know where in our code is the right time/place to put this)
 uniquedata <- data[!duplicated(data$Title),]
 head(uniquedata)
 ```
+
+*After applying the transformation, the data appears to be more normally distributed, as seen by the histograms above.*
 
 ```{r}
 
@@ -120,6 +135,9 @@ plot(logGross ~ Date, data = uniquedata,
 (cor_matrix <- cor(data[, c("Rating", "Votes", "Gross")]))
 ```
 
+*After performing the transformation to logGross, we create a boxplot of logGross revenue by Gender. As we can see in the boxplot, there appear to be differences in mean logGross revenues depending on the Gender. At a glance, the Animation appears to have the highest logGross return, followed closely by Action and Horror.*
+*We also create plots of logGross revenue by logVotes, showing a relatively linear and positive relationship. The plot for logVotes by Ranking appears to show a negative relationship. Lastly, the plot of logGross return by Date suggests a slight positive relationship between thw two.*
+
 ```{r warning = FALSE}
 library(corrplot)
 
@@ -147,7 +165,11 @@ corrplot.mixed(cor1, lower.col = "black", upper = "ellipse",
 library(PerformanceAnalytics)
 chart.Correlation(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)], histogram = TRUE, pch = 19)
 ```
-
+*The correlation plot further supports our conclusions reached above-*
+*(1) LogVotes and LogGross are positively correlated, and statistically significant with a correlation of 0.55.*
+*(2) LogVotes and Ranking are negatively correlated and statistically significant with a correlation of -0.39.*
+*(3) LogGross revenue and Date are positively correlated and statistically significant with a correlation of -0.34.*
+*Finally, the correlation between rating and logVotes is also positively correlated and statistically significant, with the highest correlation out of them all, with a correlation of 0.59.*
 
 ```{r}
 #Histogram of Rating Frequency (natasha)
@@ -155,6 +177,8 @@ hist(data$Rating, col = "lightblue", main = "Frequency of Rating", xlab = "Ratin
 #NATASHA: Histogram of Run Time Frequency (natasha)
 hist(data$RunTime, col = "lightblue", main = "Frequency of Run Time", xlab = "Run Time (min)")
 ```
+
+*The histogram of Rating shows that it is mostly normally distributed. On the other hand, the distribution for Run Time seems to be slightly right skewed.*
 
 ```{r}
 #Get the directors with the most films in the top 250 (natasha: is this even worth doing?)
@@ -221,6 +245,9 @@ legend("topleft",
        lty = c(2,1))
 ```
 
+*In order to further examine the relationship between the logGross income and the genre of a movie, we first create a boxplot of logGross income and two genders, Action and Drama.*
+*The boxplot suggests that action movies earn more income as compared to those that are labeled as drama movies. We perform a two sample ttest to evaluate this claim, and it shows a statistically significant result between the two means. In other words, with an alpha of 0.05, and a pvalue of 8.676e-09, we can reject the null that their mean incomes are equal.*
+*Further, we bootstrap the sample means of gross income in action and drama movies, as can be seen by the graph above. The results show the confidence intervals for both the bootstrapped samples and the originals. As can be seen by the four vertical lines, the original ci and the bootstrapped ci are essentially overlapping, supporting our conclusion that this difference is significant and relevant.*
 
 ```{r}       
 #Anova comparing the mean gross income of movies with different genres (Phaedra)
