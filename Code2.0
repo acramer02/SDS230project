@@ -252,4 +252,27 @@ names(uniquedata2)[bs_reg_sum$which[modbic, ]][-1]
 
 summary(lm1)
 myResPlots2(lm1)
+
+
+#qqplot of log revenue
+log_revenue <- log(data$Gross)
+#Gross here refers to the total revenue earned by the movie from the box office
+qqnorm(log_revenue)
+qqline(log_revenue)
+
+#Residual plot
+myResPlots2(model)
+model
+
+#ANCOVA test
+imdb$log_votes <- log(imdb$votes)
+imdb$log_revenue <- log(imdb$revenue)
+
+#Sort by genre
+imdb <- imdb[order(imdb$genre),]
+
+#Run ANCOVA
+model <- lm(log_votes ~ log_revenue + genre, data = imdb)
+summary(model)
 ```
+
