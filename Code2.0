@@ -1,0 +1,204 @@
+---
+title: "Final Project"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+author: INSERT PSUEDONYM
+---
+
+
+```{r setup }
+
+#Some handy libraries
+library(car)
+library(leaps)
+library(lubridate)
+library(rvest)
+
+```
+
+
+```{r}
+# We should edit to read in the way they wanted. I just added the data set to my global enviornment and then read it in.
+
+# Read in data
+data <- read.csv("imdbTop250.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# Show variable names and dimensions.
+dim(data)
+names(data)
+
+# Show the first six rows.
+head(data)
+
+# Get rid of useless column.
+data <- data[, -3]
+
+# Only keeping data with cmomplete observations (Jaime)
+data <- data[complete.cases(data),]
+
+# Keep only the first genre for each movie (we can change this later, but it just seemed easier) (Jaime)
+data$First_Genre <- sapply(strsplit(as.character(data$Genre), ", "), function(x) x[1])
+
+#There is only one observation with first genre "Family", only two with first genre "Documentary", and twenty-six with first genre "Film-Noir". Because there aren't enough observations in these categories to be able to compare them on boxplots (natasha)
+table(data$First_Genre)
+#Combining Film Noir, Documentary, and Family under a new Miscellaneous category of first genre (natasha)
+data$First_Genre <- gsub("(Documentary|Family|Film-Noir)", "Miscellaneous", data$First_Genre)
+
+
+# Make histogram of each column of data to check rough distributions
+for(col in colnames(data)){
+  if(is.numeric(data[[col]]) || is.integer(data[[col]])){
+    hist(data[[col]], main=paste("Histogram of", col), xlab=col,
+         col = "lightblue")
+  }
+}
+
+# Make logGross and logVotes variables
+
+data$logGross <- log(data$Gross)
+data$logVotes <- log(data$Votes)
+
+data[data$Title == "Goodfellas", ]
+
+#Changes data to only include each movie title once even if it was on the list for multiple years (natasha: i don't know where in our code is the right time/place to put this)
+uniquedata <- data[!duplicated(data$Title),]
+head(uniquedata)
+```
+
+```{r}
+
+# Box plot of Gross income v. Genre (Jaime)
+boxplot(uniquedata$logGross ~ uniquedata$First_Genre,
+        main = "Return by Genre",
+        ylab = "Gross Return",
+        xlab = "Genre",
+        col = c(2:7),
+        cex.axis = 0.4
+        )
+
+# Plots to visualize some relationships (Jaime)
+plot(logGross ~ logVotes, data = uniquedata)
+plot(logVotes ~ Ranking, data = data)
+plot(logGross ~ Date, data = uniquedata)
+
+# Correlation Matrix with our continuous variables (Jaime)
+(cor_matrix <- cor(data[, c("Rating", "Votes", "Gross")]))
+```
+
+```{r warning = FALSE}
+library(corrplot)
+
+#calculate pairwise correlations for columns 10-23 of crime.  You'll need the   use = "pairwise.complete.obs" option.
+cor1 <- cor(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)], use = "pairwise.complete.obs")
+
+#round cor1 to 2 decimal places and display the result.  
+(cor1 <- round(cor1, 2))
+  
+# Create a matrix called maxloc that stores the columns with the maximum values 
+# of correlations (less than one) in cor1
+maxloc <- which(cor1 == max(cor1[cor1<1]), arr.ind = TRUE)
+
+# Returns the names of the first row  from all columns.
+names(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)])[maxloc[1,]]
+
+#Create an object called sigcorr that has the results of cor.mtest for columns 10-23 of the crime data.  Use 95% CI.
+sigcorr <- cor.mtest(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)], conf.level = .95)
+
+#Use corrplot.mixed to display confidence ellipses, pairwise correlation values, and put on 'X' over non-significant values.
+corrplot.mixed(cor1, lower.col = "black", upper = "ellipse", 
+               tl.col = "black", number.cex = .7, order = "hclust", tl.pos = "lt", 
+               tl.cex=.7, p.mat = sigcorr$p, sig.level = .05)
+
+library(PerformanceAnalytics)
+chart.Correlation(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)], histogram = TRUE, pch = 19)
+```
+
+
+```{r}
+#Histogram of Rating Frequency (natasha)
+hist(data$Rating, col = "lightblue", main = "Frequency of Rating", xlab = "Rating")
+#NATASHA: Histogram of Run Time Frequency (natasha)
+hist(data$RunTime, col = "lightblue", main = "Frequency of Run Time", xlab = "Run Time (min)")
+```
+
+```{r}
+#Get the directors with the most films in the top 250 (natasha: is this even worth doing?)
+top10directors <- names(sort(table(data$Director), decreasing = TRUE)[1:10])
+#Get the all the rows with these directors (natasha)
+top10rows <- subset(data, Director %in% top10directors)
+#Make a boxplot of log of gross revenue by director with the top ten directors (natasha)
+boxplot(log(top10rows$Gross) ~ top10rows$Director,
+        main = "Return by Top Ten Directors",
+        ylab = "Log of Gross Revenue",
+        xlab = "Director",
+        col = c(2:11),
+        cex.axis = 0.3
+        )
+```
+
+
+```{r}
+#Side-by-side boxplots of Gross by Genre of Action and Drama (natasha)
+boxplot(logGross ~ First_Genre,
+        data = subset(uniquedata, uniquedata$First_Genre %in% c("Action", "Drama")),
+        main = "Boxplot of Gross Income by Genre: Action and Drama",
+        xlab = "Genre",
+        ylab = "Gross",
+        col = c("lightskyblue", "pink"))
+
+#Two-sample t-test comparing log Gross between Genres of Action and Drama (natasha)
+(test1 <- t.test(logGross ~ First_Genre, 
+                data = uniquedata[uniquedata$First_Genre %in% c("Action", "Drama"), ], 
+                subset = First_Genre %in% c("Action", "Drama"), 
+                conf.level = 0.99)) 
+
+#Bootsrapping smaple means of Gross in Action and Drama (natasha)
+#Set number of bootstrap samples to take
+N <- 10000
+#Make empty vector for sample mean differences
+diffGross <- rep(NA, N)
+for (i in 1:N) {
+  sAction <- sample(uniquedata$logGross[uniquedata$First_Genre == "Action"],
+               sum(uniquedata$First_Genre == "Action"), replace = TRUE)
+  sDrama <- sample(uniquedata$logGross[uniquedata$First_Genre == "Drama"],
+               sum(uniquedata$First_Genre == "Drama"), replace = TRUE)
+  diffGross[i] <- mean(sAction) - mean(sDrama)
+}
+
+#Get bootstrap quantiles
+ci <- quantile(diffGross, c(0.005, 0.995))
+round(ci, 2)
+
+#Make histogram of bootstrap sample means
+hist(diffGross, 
+     col = "lightblue", 
+     main = "Bootstrapped Sample Means Diff in log Gross Income", 
+     xlab = "", 
+     breaks = 50)
+
+#Add lines to histogram for CI's
+abline(v = ci, lwd=3, col="rosybrown1")
+abline(v = test1$conf.int, lwd = 3, col = "lightgreen", lty = 2)
+legend("topleft", 
+       c("Original CI","Boot CI"), 
+       lwd = 3, 
+       col = c("lightgreen","rosybrown1"), 
+       lty = c(2,1))
+```
+
+
+```{r}       
+#Anova comparing the mean gross income of movies with different genres (Phaedra)
+anova_results <- aov(Gross ~ First_Genre, data = data)
+
+#ANOVA results (Phaedra
+summary(anova_results)
+
+#Kruskal-Wallis test that compares the median gross income of movies with different ratings (phaedra)
+kwresults <- kruskal.test(Gross ~ Rating, data = data)
+
+# Check the Kruskal-Wallis results (Phaedra_
+print(kwresults)
+```
