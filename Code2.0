@@ -275,12 +275,6 @@ names(uniquedata2)[bs_reg_sum$which[modbic, ]][-1]
 ```
 
 ```{r}
-(lm1 <- lm(logGross ~ Rating + RunTime + logVotes, data = uniquedata2))
-
-summary(lm1)
-myResPlots2(lm1)
-
-
 #qqplot of log revenue
 log_revenue <- log(data$Gross)
 #Gross here refers to the total revenue earned by the movie from the box office
@@ -288,8 +282,8 @@ qqnorm(log_revenue)
 qqline(log_revenue)
 
 #Residual plot
+source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 myResPlots2(model)
-model
 
 #ANCOVA test
 imdb$log_votes <- log(imdb$votes)
