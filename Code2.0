@@ -20,7 +20,7 @@ library(rvest)
 
 
 ```{r}
-# We should edit to read in the way they wanted. I just added the data set to my global enviornment and then read it in.
+*Movies act as an entertainment source for much of the world. Many metrics can be used to determine a movie’s success — reviews written by critics, audience performance scores, award nominations, and box office performance is often considered the metric which determines a movie’s popularity, and its ability to be profitable. Websites such as IMDb are considered to influence how well a movie performs. However, how well do these rankings actually reflect a movie's box office performance? In our analysis, we explore the relationship that exists between IMDb rankings and Box Office success using a dataset of the 250 top-rated movies on IMDb and their respective box office grosses. Through statistical analysis, we seek to determine the extent to which IMDb rankings and box office performance are related and whether those rankings can serve as a reliable predictor of a movie's financial success.*
 
 # Read in data
 data <- read.csv("imdbTop250.csv", header = TRUE, stringsAsFactors = FALSE)
