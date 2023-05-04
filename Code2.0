@@ -35,10 +35,10 @@ head(data)
 # Get rid of useless column.
 data <- data[, -3]
 
-# Only keeping data with cmomplete observations (Jaime)
+# Only keeping data with complete observations
 data <- data[complete.cases(data),]
 
-# Keep only the first genre for each movie (we can change this later, but it just seemed easier) (Jaime)
+# Keep only the first genre for each movie (we can change this later, but it just seemed easier)
 data$First_Genre <- sapply(strsplit(as.character(data$Genre), ", "), function(x) x[1])
 
 #There is only one observation with first genre "Family", only two with first genre "Documentary", and twenty-six with first genre "Film-Noir". Because there aren't enough observations in these categories to be able to compare them on boxplots (natasha)
@@ -104,7 +104,7 @@ head(uniquedata)
 
 ```{r}
 
-# Box plot of Gross income v. Genre (Jaime)
+# Box plot of Gross income v. Genre
 boxplot(uniquedata$logGross ~ uniquedata$First_Genre,
         main = "Return by Genre",
         ylab = "Gross Return (in millions)",
@@ -113,7 +113,7 @@ boxplot(uniquedata$logGross ~ uniquedata$First_Genre,
         cex.axis = 0.4
         )
 
-# Plots to visualize some relationships (Jaime)
+# Plots to visualize some relationships
 plot(logGross ~ logVotes, data = uniquedata,
      pch = 19,
      col = "lightblue3",
@@ -131,7 +131,7 @@ plot(logGross ~ Date, data = uniquedata,
      xlab = "Log of Gross Return",
      main = "Log of Gross Return by Date")
 
-# Correlation Matrix with our continuous variables (Jaime)
+# Correlation Matrix with our continuous variables
 (cor_matrix <- cor(data[, c("Rating", "Votes", "Gross")]))
 ```
 
@@ -250,18 +250,18 @@ legend("topleft",
 *Further, we bootstrap the sample means of gross income in action and drama movies, as can be seen by the graph above. The results show the confidence intervals for both the bootstrapped samples and the originals. As can be seen by the four vertical lines, the original ci and the bootstrapped ci are essentially overlapping, supporting our conclusion that this difference is significant and relevant.*
 
 ```{r}       
-#Anova comparing the mean gross income of movies with different genres (Phaedra)
+#Anova comparing the mean gross income of movies with different genres
 anova_results <- aov(Gross ~ First_Genre, data = data)
 
-#ANOVA results (Phaedra
+#ANOVA results
 summary(anova_results)
 
 *It seems like there is a significant difference in mean gross income between movies with different genres (p < 0.05).*
 
-#Kruskal-Wallis test that compares the median gross income of movies with different ratings (phaedra)
+#Kruskal-Wallis test that compares the median gross income of movies with different ratings
 kwresults <- kruskal.test(Gross ~ Rating, data = data)
 
-# Check the Kruskal-Wallis results (Phaedra_
+# Check the Kruskal-Wallis results
 print(kwresults)
 ```
 
