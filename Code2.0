@@ -41,9 +41,9 @@ data <- data[complete.cases(data),]
 # Keep only the first genre for each movie (we can change this later, but it just seemed easier)
 data$First_Genre <- sapply(strsplit(as.character(data$Genre), ", "), function(x) x[1])
 
-#There is only one observation with first genre "Family", only two with first genre "Documentary", and twenty-six with first genre "Film-Noir". Because there aren't enough observations in these categories to be able to compare them on boxplots (natasha)
+#There is only one observation with first genre "Family", only two with first genre "Documentary", and twenty-six with first genre "Film-Noir". Because there aren't enough observations in these categories to be able to compare them on boxplots
 table(data$First_Genre)
-#Combining Film Noir, Documentary, and Family under a new Miscellaneous category of first genre (natasha)
+#Combining Film Noir, Documentary, and Family under a new Miscellaneous category of first genre
 data$First_Genre <- gsub("(Documentary|Family|Film-Noir)", "Miscellaneous", data$First_Genre)
 ```
 
@@ -172,9 +172,9 @@ chart.Correlation(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)], histogram = TRUE, 
 *Finally, the correlation between rating and logVotes is also positively correlated and statistically significant, with the highest correlation out of them all, with a correlation of 0.59.*
 
 ```{r}
-#Histogram of Rating Frequency (natasha)
+#Histogram of Rating Frequency
 hist(data$Rating, col = "lightblue", main = "Frequency of Rating", xlab = "Rating")
-#NATASHA: Histogram of Run Time Frequency (natasha)
+#Histogram of Run Time Frequency
 hist(data$RunTime, col = "lightblue", main = "Frequency of Run Time", xlab = "Run Time (min)")
 ```
 
@@ -183,9 +183,9 @@ hist(data$RunTime, col = "lightblue", main = "Frequency of Run Time", xlab = "Ru
 ```{r}
 #Get the directors with the most films in the top 250 (natasha: is this even worth doing?)
 top10directors <- names(sort(table(data$Director), decreasing = TRUE)[1:10])
-#Get the all the rows with these directors (natasha)
+#Get the all the rows with these directors
 top10rows <- subset(data, Director %in% top10directors)
-#Make a boxplot of log of gross revenue by director with the top ten directors (natasha)
+#Make a boxplot of log of gross revenue by director with the top ten directors
 boxplot(log(top10rows$Gross) ~ top10rows$Director,
         main = "Return by Top Ten Directors",
         ylab = "Log of Gross Revenue",
@@ -197,7 +197,7 @@ boxplot(log(top10rows$Gross) ~ top10rows$Director,
 
 
 ```{r}
-#Side-by-side boxplots of Gross by Genre of Action and Drama (natasha)
+#Side-by-side boxplots of Gross by Genre of Action and Drama
 boxplot(logGross ~ First_Genre,
         data = subset(uniquedata, uniquedata$First_Genre %in% c("Action", "Drama")),
         main = "Boxplot of Gross Income by Genre: Action and Drama",
@@ -205,13 +205,13 @@ boxplot(logGross ~ First_Genre,
         ylab = "Gross",
         col = c("lightskyblue", "pink"))
 
-#Two-sample t-test comparing log Gross between Genres of Action and Drama (natasha)
+#Two-sample t-test comparing log Gross between Genres of Action and Drama
 (test1 <- t.test(logGross ~ First_Genre, 
                 data = uniquedata[uniquedata$First_Genre %in% c("Action", "Drama"), ], 
                 subset = First_Genre %in% c("Action", "Drama"), 
                 conf.level = 0.99)) 
 
-#Bootsrapping smaple means of Gross in Action and Drama (natasha)
+#Bootsrapping smaple means of Gross in Action and Drama
 #Set number of bootstrap samples to take
 N <- 10000
 #Make empty vector for sample mean differences
