@@ -256,6 +256,8 @@ anova_results <- aov(Gross ~ First_Genre, data = data)
 #ANOVA results (Phaedra
 summary(anova_results)
 
+*It seems like there is a significant difference in mean gross income between movies with different genres (p < 0.05).*
+
 #Kruskal-Wallis test that compares the median gross income of movies with different ratings (phaedra)
 kwresults <- kruskal.test(Gross ~ Rating, data = data)
 
