@@ -227,7 +227,7 @@ dirmodel <- lm(logGross ~ Director, data = toprows)
 # Summarize the model
 summary(dirmodel)
 ```
-
+*On the boxplot, there are significant differences in the distributions of the data of log Gross Return between directors. Medians, interquartile ranges, and outliers all have great variability between groups. The boxes are of different lengths and positions, suggesting that the medians and quartiles of the data differ among groups and the whiskers extend to different lengths among the groups, indicating different levels of variability in the data. Further statistical tests and analysis are necessary to determine the source of these differences.*
 ```{r}
 boxplot(logGross ~ topdir, data = uniquedata, 
         main = "Boxplot of log of revenue by director",
