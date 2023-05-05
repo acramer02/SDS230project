@@ -337,7 +337,7 @@ anova_results2 <- aov(logGross ~ First_Genre, data = ud_subset)
 
 #Tukey plot (phaedra and natasha don't know how to make this readable)
 tukey <- TukeyHSD(anova_results2)
-plot(TukeyHSD(anova_results2), las = 1, cex.axis = 0.4)
+plot(TukeyHSD(anova_results), las = 1, cex.axis = 0.35)
 ```
 
 
