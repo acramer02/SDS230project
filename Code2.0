@@ -258,18 +258,27 @@ legend("topleft",
 
 ```{r}       
 #Anova comparing the mean gross income of movies with different genres
-anova_results <- aov(Gross ~ First_Genre, data = data)
+anova_results <- aov(logGross ~ First_Genre, data = uniquedata)
 
 #ANOVA results
 summary(anova_results)
 
-*It seems like there is a significant difference in mean gross income between movies with different genres (p < 0.05).*
+#Tukey plot (phaedra and natasha don't know how to make this readable)
+tukey <- TukeyHSD(anova_results)
+plot(TukeyHSD(anova_results), las = 1, cex.axis = 0.4)
+
+#For residual plots, fit a linear model
+myResPlots2(anova_results, label = "Log Gross Return")
+#*The normal quantile plot does not look linear which suggests that the distribution is not normal inside each group - this is unfortunate since this is an assumption of ANOVA.*
+
+#It seems like there is a significant difference in mean gross income between movies with different genres (p < 0.05).
 
 #Kruskal-Wallis test that compares the median gross income of movies with different ratings
-kwresults <- kruskal.test(Gross ~ Rating, data = data)
+kwresults <- kruskal.test(logGross ~ Rating, data = data)
 
 # Check the Kruskal-Wallis results
 print(kwresults)
+#*We can reject the null hypothesis and determine that there are statistical differences between the median pctreturn and movie genres because the p-value is below 0.05. A Kruskal Wallis test is a good choice here because the test does not assume normality or equal variances across categories.*
 ```
 
 ```{r echo = FALSE}
