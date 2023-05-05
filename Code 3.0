@@ -120,7 +120,7 @@ legend("topright", "Mean log gross revenue", lwd = 1.5, col = "darkblue",
 *After performing the transformation to logGross, we create a boxplot of logGross revenue by genre. As we can see in the boxplot, there appear to be differences in mean logGross revenues depending on the genre. At a glance, the Animation appears to have the highest logGross return, followed closely by Action and Horror. The miscellaneous category seems to do much much worse in terms of revenue, and westerns also seem below the other categories.*
 
   
-```{r warning = FALSE}
+```{r warning = FALSE, message = FALSE}
 library(corrplot)
 
 #calculate pairwise correlations for columns 10-23 of crime.  You'll need the   use = "pairwise.complete.obs" option.
@@ -368,7 +368,7 @@ myResPlots2(lm(logGross ~ ., data = bictemp))
 
 *Now, we wanted to compare that result to stepwise regression. The process is shown below, though we only actually display the final results.*
 
-```{r echo = FALSE}
+```{r eval = FALSE}
 lm1 <- lm(logGross ~ Ranking + Rating + Score + Date + RunTime +logVotes 
           + topdir + director_count, data = uniquedata2)
 summary(lm1)
