@@ -214,10 +214,12 @@ table(toprows$Director)
 boxplot(toprows$logGross ~ toprows$Director,
         main = "Return by Top Directors",
         ylab = "Log of Gross Revenue",
-        xlab = "Director",
+        xlab = "",
         col = c(2:11),
-        cex.axis = 0.5
+        cex.axis = 0.46,
+        las = 2
 )
+mtext("Director", side = 1, line = 4, cex = 0.8)
 axis(side = 1, labels = FALSE)
 
 # Fit a linear regression model to see how Director as th predictor variable predicts Log Gross
