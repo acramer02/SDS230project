@@ -180,11 +180,13 @@ hist(data$RunTime, col = "lightblue", main = "Frequency of Run Time", xlab = "Ru
 
 *The histogram of Rating shows that it is mostly normally distributed. On the other hand, the distribution for Run Time seems to be slightly right skewed.*
 
-```{r}
+```{r} 
 #Get the directors with the most films in the top 250 (natasha: is this even worth doing?)
-top10directors <- names(sort(table(data$Director), decreasing = TRUE)[1:10])
+top10directors <- names(sort(table(uniquedata$Director), decreasing = TRUE)[1:10])
 #Get the all the rows with these directors
-top10rows <- subset(data, Director %in% top10directors)
+top10rows <- subset(uniquedata, Director %in% top10directors)
+#See how many movies by each of the top ten directors there are
+table(top10rows$Director)
 #Make a boxplot of log of gross revenue by director with the top ten directors
 boxplot(log(top10rows$Gross) ~ top10rows$Director,
         main = "Return by Top Ten Directors",
@@ -193,6 +195,10 @@ boxplot(log(top10rows$Gross) ~ top10rows$Director,
         col = c(2:11),
         cex.axis = 0.3
         )
+# Fit a linear regression model to see how Director as th predictor variable predicts Log Gross
+dirmodel <- lm(logGross ~ Director, data = top10rows)
+# Summarize the model
+summary(dirmodel)
 ```
 
 
