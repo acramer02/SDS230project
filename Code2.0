@@ -15,6 +15,7 @@ library(car)
 library(leaps)
 library(lubridate)
 library(rvest)
+source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 
 ```
 
@@ -290,7 +291,6 @@ qqnorm(log_revenue)
 qqline(log_revenue)
 
 #Residual plot
-source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 myResPlots2(model)
 
 #ANCOVA test
