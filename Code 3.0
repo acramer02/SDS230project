@@ -1,0 +1,353 @@
+---
+title: "Final Project"
+output:
+pdf_document: default
+html_document: default
+word_document: default
+author: PANJAKES
+---
+
+```{r setup}
+
+#Some handy libraries
+library(car)
+library(leaps)
+library(lubridate)
+library(rvest)
+library(dplyr)
+source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
+```
+
+*Movies act as an entertainment source for much of the world. Many metrics can be used to determine a movie’s success — reviews written by critics, audience performance scores, award nominations, and box office performance is often considered the metric which determines a movie’s popularity, and its ability to be profitable. Websites such as IMDb are considered to reflect how well a movie performs. However, how well do these rankings actually reflect a movie's box office performance? In our analysis, we explore the relationship that exists between IMDb rankings and Box Office success using a dataset of the 250 top-rated movies on IMDb and their respective box office grosses. Through statistical analysis, we seek to determine the extent to which IMDb rankings and box office performance are related and whether those rankings can serve as a reliable predictor of a movie's financial success.*
+
+```{r}
+  # Read in data
+data <- read.csv("https://raw.githubusercontent.com/acramer02/SDS230project/main/imdbTop250.csv", header = TRUE, stringsAsFactors = FALSE)
+
+# Show variable names and dimensions.
+dim(data)
+names(data)
+
+# Show the first six rows.
+head(data)
+
+# Get rid of useless column.
+data <- data[, -3]
+
+# Only keeping data with complete observations
+data <- data[complete.cases(data),]
+
+# Keep only the first genre for each movie (we can change this later, but it just seemed easier)
+data$First_Genre <- sapply(strsplit(as.character(data$Genre), ", "), function(x) x[1])
+
+#There is only one observation with first genre "Family", only two with first genre "Documentary", and twenty-six with first genre "Film-Noir". Because there aren't enough observations in these categories to be able to compare them on boxplots
+table(data$First_Genre)
+#Combining Film Noir, Documentary, and Family under a new Miscellaneous category of first genre
+data$First_Genre <- gsub("(Documentary|Family|Film-Noir)", "Miscellaneous", data$First_Genre)
+```
+
+```{r eval = F}
+# Make histogram of each column of data to check rough distributions
+for(col in colnames(data)){
+  if(is.numeric(data[[col]]) || is.integer(data[[col]])){
+    hist(data[[col]], main=paste("Histogram of", col), xlab=col,
+         col = "lightblue")
+  }
+}
+```
+
+*Given how the histograms look, it appears that gross revenue and votes require a log transformation.*
+  
+```{r}
+hist(data$Votes,
+     col = "lightblue",
+     xlab = "Votes",
+     breaks = 30,
+     main = "Histogram of Votes")
+
+
+hist(data$Gross,
+     col = "lightblue",
+     xlab = "Gross Return (in millions)",
+     breaks = 30,
+     main = "Histogram of Gross Return")
+```
+```{r}
+# Make logGross and logVotes variables
+
+data$logGross <- log(data$Gross)
+data$logVotes <- log(data$Votes)
+
+hist(data$logVotes,
+     col = "lightblue",
+     xlab = "Votes",
+     breaks = 30,
+     main = "Histogram of Log Votes")
+
+
+hist(data$logGross,
+     col = "lightblue",
+     xlab = "Gross Return (in millions)",
+     breaks = 30,
+     main = "Histogram of Log Gross Return")
+
+data[data$Title == "Goodfellas", ]
+
+#Changes data to only include each movie title once even if it was on the list for multiple years (natasha: i don't know where in our code is the right time/place to put this)
+uniquedata <- data[!duplicated(data$Title),]
+head(uniquedata)
+```
+
+*After applying the transformation, the data appears to be more normally distributed, as seen by the histograms above.*
+  
+```{r}
+# Box plot of Gross income v. Genre
+boxplot(uniquedata$logGross ~ uniquedata$First_Genre,
+        main = "Return by Genre",
+        ylab = "Gross Return (in millions)",
+        xlab = "Genre",
+        col = c(2:7),
+        cex.axis = 0.4
+)
+```
+
+*After performing the transformation to logGross, we create a boxplot of logGross revenue by genre. As we can see in the boxplot, there appear to be differences in mean logGross revenues depending on the genre. At a glance, the Animation appears to have the highest logGross return, followed closely by Action and Horror.*
+
+  
+```{r warning = FALSE}
+library(corrplot)
+
+#calculate pairwise correlations for columns 10-23 of crime.  You'll need the   use = "pairwise.complete.obs" option.
+cor1 <- cor(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)], use = "pairwise.complete.obs")
+
+#round cor1 to 2 decimal places and display the result.  
+(cor1 <- round(cor1, 2))
+
+# Create a matrix called maxloc that stores the columns with the maximum values 
+# of correlations (less than one) in cor1
+maxloc <- which(cor1 == max(cor1[cor1<1]), arr.ind = TRUE)
+
+# Returns the names of the first row  from all columns.
+names(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)])[maxloc[1,]]
+
+#Create an object called sigcorr that has the results of cor.mtest for columns 10-23 of the crime data.  Use 95% CI.
+sigcorr <- cor.mtest(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)], conf.level = .95)
+
+#Use corrplot.mixed to display confidence ellipses, pairwise correlation values, and put on 'X' over non-significant values.
+corrplot.mixed(cor1, lower.col = "black", upper = "ellipse", 
+               tl.col = "black", number.cex = .7, order = "hclust", tl.pos = "lt", 
+               tl.cex=.7, p.mat = sigcorr$p, sig.level = .05)
+
+library(PerformanceAnalytics)
+chart.Correlation(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 18)], histogram = TRUE, pch = 19)
+```
+
+*The correlation plot seems to indicate a few relationships*
+  *(1) LogVotes and LogGross are positively correlated, and statistically significant with a correlation of 0.55.*
+  *(2) LogVotes and Ranking are negatively correlated and statistically significant with a correlation of -0.39.*
+  *(3) LogGross revenue and Date are positively correlated and statistically significant with a correlation of -0.34.*
+  *(4)Finally, the correlation between Rating and logVotes is also positively correlated and statistically significant, with the highest correlation out of them all, with a correlation of 0.59.*
+  *From these scatterplots, we can see there will be issues of multicollinearity if we try to use score and rating or logVotes and Rating, so that is something to be aware of*
+  *(5)The relationship of Date and IMDb year is trivial since movies will naturally appear on IMDb based on when they are made.*
+  
+
+```{r}
+# Plots to visualize some relationships
+plot(logGross ~ logVotes, data = uniquedata,
+     pch = 19,
+     col = "lightblue3",
+     xlab = "Log of Votes",
+     ylab = "Log of Gross Return",
+     main = "Log of Gross Return by Log of Votes")
+abline(lm(logGross ~ logVotes, data = uniquedata), 
+          col = "black", lwd = 3, lty = 2)
+
+plot(logVotes ~ Rating, data = uniquedata,
+     pch = 19,
+     col = "lightblue2",
+     ylab = "Log of Votes",
+     main = "Log of Votes by Rating")
+abline(lm(logVotes ~ Rating, data = uniquedata), 
+          col = "black", lwd = 3, lty = 2)
+
+plot(logVotes ~ Ranking, data = data,
+     pch = 19,
+     col = "lightblue2",
+     ylab = "Log of Votes",
+     main = "Log of Votes by Ranking")
+abline(lm(logVotes ~ Ranking, data = uniquedata), 
+          col = "black", lwd = 3, lty = 2)
+
+plot(logGross ~ Date, data = uniquedata,
+     pch = 19,
+     col = "lightblue",
+     xlab = "Log of Gross Return",
+     main = "Log of Gross Return by Date")
+abline(lm(logGross ~ Date, data = uniquedata), 
+          col = "black", lwd = 3, lty = 2)
+
+# Correlation Matrix with our continuous variables
+(cor_matrix <- cor(data[, c("Rating", "Votes", "Gross")]))
+```
+
+*Based off of the previous mixed correlation plots, we now created scatterplots to more clearly visualize the data. These reflect the relationships we saw above.*
+  
+
+```{r} 
+#Get the directors with the five or more  films in the top 250 dataset 
+topdirectors <- names(sort(table(uniquedata$Director), decreasing = TRUE)[1:16])
+#Get the all the rows with these directors
+toprows <- subset(uniquedata, Director %in% topdirectors)
+
+# Create a new column with 1 if its a top director and 0 if not
+uniquedata$topdir <- uniquedata$Director %in% topdirectors
+uniquedata[uniquedata$topdir == TRUE, 19] <- 1
+  
+
+#See how many movies by each of the top ten directors there are
+table(top10rows$Director)
+#Make a boxplot of log of gross revenue by director with the top ten directors
+boxplot(log(top10rows$Gross) ~ top10rows$Director,
+        main = "Return by Top Ten Directors",
+        ylab = "Log of Gross Revenue",
+        xlab = "Director",
+        col = c(2:11),
+        cex.axis = 0.3
+)
+# Fit a linear regression model to see how Director as th predictor variable predicts Log Gross
+dirmodel <- lm(logGross ~ Director, data = toprows)
+# Summarize the model
+summary(dirmodel)
+```
+
+```{r}
+boxplot(logGross ~ topdir, data = uniquedata, 
+        main = "Boxplot of log of revenue by director",
+        xlab = "Director", names = c("Top 16", "Not Top 16"),
+        ylab = "Log of Revenue", col = c("lightskyblue", "pink"))
+
+#Two-sample t-test comparing log Gross between Genres of Action and Drama
+(test1 <- t.test(logGross ~ topdir, 
+                 data = uniquedata,
+                 conf.level = 0.99)) 
+
+#Bootstrapping smaple means of Gross in Action and Drama
+#Set number of bootstrap samples to take
+N <- 10000
+#Make empty vector for sample mean dierences
+diffGross <- rep(NA, N)
+for (i in 1:N) {
+  sYes <- sample(uniquedata$logGross[uniquedata$topdir == 0],
+                    sum(uniquedata$topdir == 0), replace = TRUE)
+  sNo <- sample(uniquedata$logGross[uniquedata$topdir == 1],
+                   sum(uniquedata$topdir == 1), replace = TRUE)
+  diffGross[i] <- mean(sYes) - mean(sNo)
+}
+
+#Get bootstrap quantiles
+ci <- quantile(diffGross, c(0.005, 0.995))
+round(ci, 2)
+
+#Make histogram of bootstrap sample means
+hist(diffGross, 
+     col = "lightblue", 
+     main = "Bootstrapped Sample Means Diff in log Gross Income", 
+     xlab = "", 
+     breaks = 50)
+
+#Add lines to histogram for CI's
+abline(v = ci, lwd=3, col="rosybrown1")
+abline(v = test1$conf.int, lwd = 3, col = "lightgreen", lty = 2)
+legend("topleft", 
+       c("Original CI","Boot CI"), 
+       lwd = 3, 
+       col = c("lightgreen","rosybrown1"), 
+       lty = c(2,1))
+```
+
+
+*In order to further examine the relationship between the logGross income by quality of director, we first created a boxplot of logGross income and the fame of director (5+ top 250 movies over this time or not).*
+  *The boxplot suggests that movies made by more successful directors earn more income as compared to those that are not. We perform a two sample t-test to evaluate this claim, and it shows a statistically significant result between the two means. In other words, with an alpha of 0.05, and a p-value of 0.000816, we can reject the null that their mean revenues are equal.*
+  *Further, we bootstrap the sample means of gross income in action and drama movies, as can be seen by the graph above. The results show the confidence intervals for both the bootstrapped samples and the originals. As can be seen by the four vertical lines, the original ci and the bootstrapped ci are essentially overlapping, supporting our conclusion that this difference is significant and relevant.*
+  
+
+```{r}
+# Adds a column that includes a count of how many times a director appears in 
+# the database.
+uniquedata <- uniquedata %>% 
+  group_by(Director) %>% 
+  mutate(director_count = n())
+
+# Fit a linear regression model to see how Director as th predictor variable predicts Log Gross
+dirmodel2 <- lm(logGross ~ director_count, data = uniquedata)
+# Summarize the model
+summary(dirmodel2)
+```
+  
+*Interesting and worth commenting on.*
+
+```{r}       
+#Anova comparing the mean gross income of movies with different genres
+anova_results <- aov(logGross ~ First_Genre, data = uniquedata)
+
+#ANOVA results
+summary(anova_results)
+
+#Tukey plot (phaedra and natasha don't know how to make this readable)
+tukey <- TukeyHSD(anova_results)
+plot(TukeyHSD(anova_results), las = 1, cex.axis = 0.4)
+
+#For residual plots, fit a linear model
+myResPlots2(anova_results, label = "Log Gross Return")
+#*The normal quantile plot does not look linear which suggests that the distribution is not normal inside each group - this is unfortunate since this is an assumption of ANOVA.*
+
+#It seems like there is a significant difference in mean gross income between movies with different genres (p < 0.05).
+
+#Kruskal-Wallis test that compares the median gross income of movies with different ratings
+kwresults <- kruskal.test(logGross ~ Rating, data = data)
+
+# Check the Kruskal-Wallis results
+print(kwresults)
+```
+
+*We can reject the null hypothesis and determine that there are statistical differences between the median pctreturn and movie genres because the p-value is below 0.05. A Kruskal Wallis test is a good choice here because the test does not assume normality or equal variances across categories.*
+
+
+```{r}
+uniquedata2 <- uniquedata[ , c("logGross", "Ranking", "Rating", "Score", 
+                               "RunTime", "logVotes", "topdir", "director_count")]
+
+uniquedata2[uniquedata2$logGross < 0, ] <- 0
+
+bs_reg_sum <- summary(regsubsets(logGross ~ ., data = uniquedata2))
+modbic <- which.min(bs_reg_sum$bic)
+names(uniquedata2)[bs_reg_sum$which[modbic, ]][-1]
+```
+*These variables will be inlcuded in our bic model: Rating, RunTime ,logVotes, and topdir.*
+
+```{r}
+bictemp <- uniquedata2[ ,bs_reg_sum$which[modbic, ]]
+summary(lm(logGross ~ ., data = bictemp))
+```
+
+```{r}
+#qqplot of log revenue
+log_revenue <- log(data$Gross)
+#Gross here refers to the total revenue earned by the movie from the box office
+qqnorm(log_revenue)
+qqline(log_revenue)
+
+#Residual plot
+myResPlots2(model)
+
+#ANCOVA test
+imdb$log_votes <- log(imdb$votes)
+imdb$log_revenue <- log(imdb$revenue)
+
+#Sort by genre
+imdb <- imdb[order(imdb$genre),]
+
+#Run ANCOVA
+model <- lm(log_votes ~ log_revenue + genre, data = imdb)
+summary(model)
+```
