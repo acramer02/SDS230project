@@ -402,3 +402,9 @@ summary(model)
 #Residual plot
 myResPlots2(model)
 ```
+
+*After running the ANCOVA, we notice that logVotes, Rating, Runtime and topdir are all statisticall significant. Runtime, once again, appears to have less predictive power than the rest of the predictors. In terms of the genres, we observe that biography, comedy, drama and miscellaneous movie genres have higher logGross compared to the reference group. Some interactions of logVotes with genres show significance aswell. The interaction of logVotes with biography, comedy, drama and miscellaneous are all negative and statistically significant, suggesting that the positive relationship between logVotes and logGross is weaker for these genres of movies compared to the reference groups. Overall, this model explains approximately 55% of the variance in the logGross variable (adjusted r-squared).*
+
+
+
+
