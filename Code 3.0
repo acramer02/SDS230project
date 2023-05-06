@@ -96,7 +96,7 @@ topdirectors <- names(sort(table(uniquedata$Director), decreasing = TRUE)[1:16])
 
 # Create a new column with 1 if its a top director and 0 if not
 uniquedata$topdir <- uniquedata$Director %in% topdirectors
-uniquedata[uniquedata$topdir == TRUE, 19] <- 1
+uniquedata[uniquedata$topdir == TRUE, 18] <- 1
   
 
 # Adds a column that includes a count of how many times a director appears in 
