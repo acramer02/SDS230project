@@ -289,6 +289,7 @@ boxplot(toprows$logGross ~ toprows$Director,
         cex.axis = 0.5,
         las = 2
 )
+abline(h = mean(uniquedata$logGross), lwd = 1.5, col = "darkblue")
 mtext("Director", side = 1, line = 4, cex = 0.8)
 axis(side = 1, labels = FALSE)
 
