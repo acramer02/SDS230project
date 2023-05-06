@@ -250,7 +250,7 @@ abline(lm(logVotes ~ Rating, data = uniquedata),
 
 plot(logVotes ~ Ranking, data = uniquedata,
      pch = 19,
-     col = "lightblue2",
+     col = "deepskyblue3",
      ylab = "Log of Votes",
      main = "Log of Votes by Ranking")
 abline(lm(logVotes ~ Ranking, data = uniquedata), 
@@ -258,7 +258,7 @@ abline(lm(logVotes ~ Ranking, data = uniquedata),
 
 plot(logGross ~ Date, data = uniquedata,
      pch = 19,
-     col = "lightblue",
+     col = "deepskyblue2",
      xlab = "Log of Gross Return",
      main = "Log of Gross Return by Date")
 abline(lm(logGross ~ Date, data = uniquedata), 
@@ -266,7 +266,7 @@ abline(lm(logGross ~ Date, data = uniquedata),
 
 plot(logGross ~ CastCount, data = uniquedata,
      pch = 19,
-     col = "lightblue",
+     col = "dodgerblue",
      xlab = "Log of Gross Return",
      main = "Log of Gross Return by Cast Appearances")
 abline(lm(logGross ~ CastCount, data = uniquedata), 
