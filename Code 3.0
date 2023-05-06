@@ -143,6 +143,13 @@ dim(uniquedata)
   
 *Now we can see the first few columns and dimensions of our data and we can see it is much more usable*
   
+*Just to get a sense, here are the 10 highest-grossing films in the dataset.*
+```{r}
+head(uniquedata[order(-uniquedata$logGross), c("Title", "Gross")], 10)
+```
+*We can see that the list is dominated by Star Wars and the MCU, although Avatar, Titanic, and E.T. all make the list as well.*
+   
+  
 ```{r}
 # Box plot of Gross income v. Genre
 boxplot(uniquedata$logGross ~ uniquedata$First_Genre,
