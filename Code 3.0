@@ -424,6 +424,12 @@ myResPlots2(lm(logGross ~ ., data = bictemp))
 
 *These variables will be inlcuded in our bic model: Rating, RunTime, logVotes, topdir, and CastCount. And per the summary of the model, we can see that they all are significant by p-value. It is worth noting that the coefficients for logVotes and Rating have a much stronger effect than that of RunTime or CastCount. Our adjusted r-squared value of 0.506 also shows that our model explains just over 50% of the data.*
 
+*These variables will be inlcuded in our bic model: Rating, RunTime, logVotes, topdir, and CastCount. And per the summary of the model, we can see that they all are significant by p-value.* 
+
+*Everything except for topdir has a positive coefficient, suggesting that they all contribute to higher Gross revenue. LogVotes holds by far the most predictive power, followed by CastCount. As for why topdir is negative, we're not quite sure since we did permutation tests to show a positive correlation there, so it might be some issue of multicollinearity.*
+
+*It is worth noting that the coefficients for logVotes and Rating have a much stronger effect than that of RunTime or CastCount. Our adjusted r-squared value of 0.5174 also shows that our model explains just over 50% of the data. And the model itself has a p-value of essentially 0, showing that it is highly predictive.*
+
 *From the residual plots, we can see that the residuals of our model are almost perfectly normally distributed and there is also no evidence of heteroskedasticity.*
 
 *Now, we wanted to compare that result to stepwise regression. The process is shown below, though we only actually display the final results.*
