@@ -158,7 +158,6 @@ hist(uniquedata$logGross,
 ```{r}
 #Changes uniquedata to only include each movie title once even if it was on the list for multiple years 
 uniquedata$logGross[uniquedata$logGross < 0] <- 0
-uniquedata <- uniquedata[ , -19]
 head(uniquedata)
 dim(uniquedata)
 ```
