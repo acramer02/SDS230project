@@ -20,23 +20,23 @@ source("http://www.reuningscherer.net/s&ds230/Rfuncs/regJDRS.txt")
 
 *Movies act as an entertainment source for much of the world. Many metrics can be used to determine a movie’s success — reviews written by critics, audience performance scores, award nominations, and box office performance is often considered the metric which determines a movie’s popularity, and its ability to be profitable. Websites such as IMDb are considered to reflect how well a movie performs. However, how well do these rankings actually reflect a movie's box office performance? In our analysis, we explore the relationship that exists between IMDb rankings and Box Office success using a dataset of the 250 top-rated movies on IMDb and their respective box office grosses. Through statistical analysis, we seek to determine the extent to which IMDb rankings and box office performance are related and whether those rankings can serve as a reliable predictor of a movie's financial success.*
 *Variables Used:*
-*Ranking: ranking of movie on IMDB*
-*Title: title of movie*
-*Date: release year of movie*
-*RunTime: total runtime of movie (in minutes)*
-*Genre: genres of movie*
-*Rating: IMDB score of movie*
-*Score: Metascore score of movie*
-*Votes: total vote son IMDB for movie*
-*Gross: total gross of movie (in millions of dollars)*
-*Director: director of movie*
+*Ranking: ranking of movie on IMDB (continuous)*
+*Title: title of movie (categorical)*
+*Date: release year of movie (continuous)*
+*RunTime: total runtime of movie in minutes (continuous)*
+*Genre: genres of movie (categorical)*
+*Rating: IMDB score of movie (continuous)*
+*Score: Metascore score of movie (continuous)*
+*Votes: total vote son IMDB for movie (continuous)*
+*Gross: total gross of movie in millions of dollars (continuous)*
+*Director: director of movie (categorical)*
 
-*First_Genre- we create this to use instead of the multiple genres in Genre*
-*logGross- we create this taking the log of Gross*
-*logVotes- we create this taking the log of Votes*
-*CastCount- we create this to equal the number of times cast members inn that movie appear in IMDB top movies*
-*topdir- we create this to show is the director of the movie has five or more movies in the top IMDB list (1 is yes, 0 is no)*
-*director_count- we create this to have a count of how many movies int he top IMDB movie list the director of the movie listed has*
+*First_Genre- we create this to use instead of the multiple genres in Genre (categorical)*
+*logGross- we create this taking the log of Gross (continuous)*
+*logVotes- we create this taking the log of Votes (continuous)*
+*CastCount- we create this to equal the number of times cast members inn that movie appear in IMDB top movies (continuous)*
+*topdir- we create this to show is the director of the movie has five or more movies in the top IMDB list (1 is yes, 0 is no; categorical)*
+*director_count- we create this to have a count of how many movies int he top IMDB movie list the director of the movie listed has (continuous)*
 
 *Data Cleaning Description*
 *We had a relatively clean data set but did a few things to make it workable. We create a new dataset, uniquedata, that only includes each movie title once because movies like Goodfellas that are consistently in the top IMDB movies and appeared many times in our dataset. We started with data that had 16 columns and 6500 observations. We got rid of a useless column, kept only data with complete information, and simplified the genre of movies into a new variable called First_Genre that only kept the first listed genre. We put three genres with very few observations (Film Noir, Documentary, and Family) under a Miscellaneous category. We checked the distribution of variables in histograms and discovered that both Gross and Votes didn’t look normal and required log transformations. We added columns logGross and logVotes with these  transformations. We create variable CastCount to equal the number of times cast members in a given movie appear in IMDB top movies. We make text changes to make Director easier to read and add a variable topdir to show if a movie has a top director or not.*
