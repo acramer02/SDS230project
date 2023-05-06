@@ -225,7 +225,7 @@ chart.Correlation(uniquedata[ , c(1, 2, 4, 5, 7, 8, 17, 19, 20, 21)], histogram 
   *(3) LogGross revenue and Date are positively correlated and statistically significant with a correlation of 0.33.*
   *(4) The number of cast appearances seems to be positively correlated with logGorss, logVotes, and rating.*
   *(5)Finally, the correlation between Rating and logVotes is also positively correlated and statistically significant, with the highest correlation out of them all, with a correlation of 0.59.*
-  *From these scatterplots, we can see there will be issues of multicollinearity if we try to use score and rating or logVotes and Rating, so that is something to be aware of*
+    *From these scatterplots, we can see there will be issues of multicollinearity if we try to use score and rating or logVotes and Rating, so that is something to be aware of. To avoid these problems, we generally are going to use logVotes as the measure of popularity.*
   *(6)The relationship of Date and IMDb year is trivial since movies will naturally appear on IMDb based on when they are made.*
   
 
