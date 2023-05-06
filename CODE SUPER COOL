@@ -7,7 +7,7 @@ word_document: default
 author: PANJAKES
 ---
 
-```{r setup}
+```{r setup, message = FALSE, warning = FALSE}
 
 #Some handy libraries
 library(car)
