@@ -116,7 +116,8 @@ for(col in colnames(uniquedata)){
 }
 ```
 
-*Given how the histograms look, it appears that gross revenue and votes require a log transformation.*
+*Because the histograms for Gross and Votes are so right skewed, it appears they require a log transformation.*
+
   
 ```{r}
 hist(uniquedata$Votes,
