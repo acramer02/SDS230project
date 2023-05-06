@@ -303,7 +303,7 @@ summary(anova_results)
 
 #Tukey plot (phaedra and natasha don't know how to make this readable)
 tukey <- TukeyHSD(anova_results)
-plot(TukeyHSD(anova_results), las = 1, cex.axis = 0.4)
+plot(TukeyHSD(anova_results), las = 1, cex.axis = 0.35)
 
 #For residual plots, fit a linear model
 myResPlots2(anova_results, label = "Log Gross Return")
