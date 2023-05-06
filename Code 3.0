@@ -62,7 +62,7 @@ uniquedata <- uniquedata[complete.cases(uniquedata),]
 
 # Keep only the first genre for each movie 
 uniquedata$First_Genre <- sapply(strsplit(as.character(uniquedata$Genre), ", "), function(x) x[1])
-
+ 
 #There is only one observation with first genre "Family", only two with first genre "Documentary", and twenty-six with first genre "Film-Noir". Because there aren't enough observations in these categories to be able to compare them on boxplots
 table(uniquedata$First_Genre)
 #Combining Film Noir, Documentary, and Family under a new Miscellaneous category of first genre
