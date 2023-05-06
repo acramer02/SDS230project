@@ -37,13 +37,17 @@ data <- data[, -3]
 # Only keeping data with complete observations
 data <- data[complete.cases(data),]
 
-# Keep only the first genre for each movie (we can change this later, but it just seemed easier)
+# Keep only the first genre for each movie 
+# This was a somewhat tricky decision, but made life much simpler for analysis
 data$First_Genre <- sapply(strsplit(as.character(data$Genre), ", "), function(x) x[1])
 
 #There is only one observation with first genre "Family", only two with first genre "Documentary", and twenty-six with first genre "Film-Noir". Because there aren't enough observations in these categories to be able to compare them on boxplots
 table(data$First_Genre)
 #Combining Film Noir, Documentary, and Family under a new Miscellaneous category of first genre
 data$First_Genre <- gsub("(Documentary|Family|Film-Noir)", "Miscellaneous", data$First_Genre)
+
+#Shorten a director pair that will be easier to read earlier
+data$Director <- gsub("Joel Coen,  Ethan Coen", "Joel and Ethan Coen", data$Director)
 ```
 
 ```{r eval = F}
@@ -216,7 +220,7 @@ boxplot(toprows$logGross ~ toprows$Director,
         ylab = "Log of Gross Revenue",
         xlab = "",
         col = c(2:11),
-        cex.axis = 0.46,
+        cex.axis = 0.5,
         las = 2
 )
 mtext("Director", side = 1, line = 4, cex = 0.8)
@@ -267,7 +271,7 @@ hist(diffGross,
 abline(v = ci, lwd=3, col="rosybrown1")
 abline(v = test1$conf.int, lwd = 3, col = "lightgreen", lty = 2)
 legend("topleft", 
-       c("Original CI","Boot CI"), 
+       c("Original 99% CI","Boot 99% CI"), 
        lwd = 3, 
        col = c("lightgreen","rosybrown1"), 
        lty = c(2,1))
@@ -337,7 +341,7 @@ anova_results2 <- aov(logGross ~ First_Genre, data = ud_subset)
 
 #Tukey plot (phaedra and natasha don't know how to make this readable)
 tukey <- TukeyHSD(anova_results2)
-plot(TukeyHSD(anova_results), las = 1, cex.axis = 0.35)
+plot(TukeyHSD(anova_results2), las = 1, cex.axis = 0.35)
 ```
 
 
@@ -408,5 +412,9 @@ myResPlots2(model)
 *After running the ANCOVA, we notice that logVotes, Rating, Runtime and topdir are all statisticall significant. Runtime, once again, appears to have less predictive power than the rest of the predictors. In terms of the genres, we observe that biography, comedy, drama and miscellaneous movie genres have higher logGross compared to the reference group. Some interactions of logVotes with genres show significance aswell. The interaction of logVotes with biography, comedy, drama and miscellaneous are all negative and statistically significant, suggesting that the positive relationship between logVotes and logGross is weaker for these genres of movies compared to the reference groups. Overall, this model explains approximately 55% of the variance in the logGross variable (adjusted r-squared).*
 
 
-
+*OVERALL COMMMENTARY TO BE ADDED*
+*Generally IMDb data can allow us to explain 50% of the data through different kinds of analysis*
+-- note what other factors could matter (e.g. writer, cast, etc, actual quality of the film)
+*Genre definitely matters*
+*voting is pretty predictive on its own. comment on other variables that appear a lot*
 
